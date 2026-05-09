@@ -62,9 +62,9 @@ jobs:
           prerelease: false
           # ここに圧縮済みファイルのパスを指定します
           files: |
-             ./Ubuntu-*img.xz
-             ./sd-card.txt
-             ./u-boot-rockchip.bin
+            ./Ubuntu-*img.xz
+            ./sd-card.txt
+            ./u-boot-rockchip.bin
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
