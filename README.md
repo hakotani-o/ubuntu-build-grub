@@ -70,8 +70,7 @@ This repository focuses on the **U-Boot -> GRUB** boot sequence for **Orange Pi 
 This is an experimental project. While the boot time is optimized to 2:20, it is intentionally slower than a direct U-Boot boot to allow for GRUB's flexibility and potential compatibility with generic GRUB-based tools
 * It will not boot if an older version of SPL (such as mtd0) is written.
 * I tested with SPL erased.
-
-
+* Direct booting from NVMe (M.2) is unconfirmed, but U-Boot itself is supported.
 
 ---
 
