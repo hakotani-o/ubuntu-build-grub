@@ -52,6 +52,14 @@ jobs:
             echo "kernel_version=unknown" >> $GITHUB_OUTPUT
           fi
 
+      - name: Rename files to avoid conflict
+        run: |
+          # モデル名をつけてリネーム（例: u-boot-rockchip.bin -> u-boot-rockchip-orangepi-5.bin）
+          mv u-boot-rockchip.bin u-boot-rockchip-${{ matrix.model }}.bin
+          # 他に重複しそうなファイルがあれば同様にリネーム
+          if [ -f sd-card.txt ]; then mv sd-card.txt sd-card-${{ matrix.model }}.txt; fi
+
+
       # リリース作成（5とPLUSの両方が完了するのを待たず、各自がアップロード）
       - name: Create Release and Upload
         uses: softprops/action-gh-release@v2
