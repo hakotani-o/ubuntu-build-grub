@@ -78,7 +78,7 @@ jobs:
           make_latest: true
           files: |
             ./Ubuntu-*img.xz
-            ./sd-card.txt
-            ./u-boot-rockchip.bin
+            ./sd-card-${{ matrix.model }}.txt
+            ./u-boot-rockchip-${{ matrix.model }}.bin
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
