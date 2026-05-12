@@ -65,17 +65,17 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: build-${{ github.run_number }}
-          name: "Orange Pi 5/PLUS Disk Image Build ${{ github.run_number }}"
-          body: |
-            Orange Pi 5 / 5 PLUS Grub boot Disk Image
-            ビルド日時: ${{ steps.date.outputs.now }}
-            ベースカーネル: ${{ steps.kernel.outputs.kernel_version }}
-          draft: false
-          prerelease: false
-          # 【重要】既存のリリースがある場合にファイルを追記・更新できるようにする
-          allow_updates: true
-          # 【重要】2つのジョブが同時に書き込んでもエラーにならないようにする
-          make_latest: true
+      - name: Create Release and Upload
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: "Orange Pi 5/PLUS Build ${{ github.run_number }}"
+          # allow_updatesではなく、こちらを使用（警告対策）
+          make_latest: "true"
+          # ファイルが既に存在する場合に上書きを許可
+          overwrite: true
+          # 2つのジョブが同時に動く際の衝突を防ぐ設定
+          fail_on_unmatched_files: false
           files: |
             ./Ubuntu-*img.xz
             ./sd-card-${{ matrix.model }}.txt
