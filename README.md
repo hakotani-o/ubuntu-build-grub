@@ -44,6 +44,35 @@ Orange Pi 5 / 5 Plus で **U-Boot + GRUB** を使用して **Ubuntu 26.04** を�
 * **USB 3.0 ポート:** 動作しません。USB 2.0のみ使用可能です。
 * **ディスプレイ出力:** 起動プロセスの後半（4分後以降）まで何も映りません。
 
+## 🌟 その後の追加情報
+* **Linux Kernel Stable (7.0.y)** に変更すると **USB3.0ポート** が動作しました。
+* **ubuntu-build** のカーネルを使用するとブート時間が約半分になります。
+
+
+
+---
+## ubuntu-build-grub (Experimental)
+This repository focuses on the **U-Boot -> GRUB** boot sequence for **Orange Pi 5 and Plus**.
+
+## 🌟 What's New & Key Discoveries
+* USB 3.0 Support with Stable Kernel: We discovered that switching from the generic Ubuntu kernel to a custom-built Linux Kernel Stable (7.0.y) enables full functionality of USB 3.0 ports.
+
+* 50% Faster Boot Time: By using our optimized custom kernel instead of the Ubuntu generic kernel, the boot time has been cut in half—now only 2 minutes and 20 seconds to the login screen.
+
+* Filesystem Integrity: The build script has been improved to ensure a stable boot by organizing /boot assets correctly during the image assembly process.
+
+## 🚀 Key Features
+* U-Boot -> GRUB Chain: Implementing a standard Linux boot flow. This moves the boot process closer to the architecture used by PC and Server distributions.
+
+* Serial Console Focused: Currently, the GRUB menu and boot logs are output via the Serial Console, making it a powerful setup for headless servers or deep technical debugging.
+
+## ⚠️ Important Note
+This is an experimental project. While the boot time is optimized to 2:20, it is intentionally slower than a direct U-Boot boot to allow for GRUB's flexibility and potential compatibility with generic GRUB-based tools
+* It will not boot if an older version of SPL (such as mtd0) is written.
+* I tested with SPL erased.
+
+
+
 ---
 
     
