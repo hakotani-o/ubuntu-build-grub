@@ -22,13 +22,13 @@ build_rootfs:
           sudo ./ubuntu-image.sh
           # ここで rootfs.tar.xz などができる想定
 
-- name: Upload rootfs artifact
+      - name: Upload rootfs artifact
         uses: actions/upload-artifact@v4
         with:
           name: shared-rootfs
           path: ubuntu.rootfs.tar # 作成されたファイルのパスを指定
 
-  build:
+build:
     name: Build for ${{ matrix.model }}
     runs-on: ubuntu-24.04-arm
     strategy:
