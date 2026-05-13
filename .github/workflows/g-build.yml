@@ -21,7 +21,7 @@ build_rootfs:
           chmod +x ubuntu-image.sh
           sudo ./ubuntu-image.sh
           # ここで rootfs.tar.xz などができる想定
-
+      
       - name: Upload rootfs artifact
         uses: actions/upload-artifact@v4
         with:
