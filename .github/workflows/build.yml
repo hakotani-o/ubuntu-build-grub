@@ -40,7 +40,7 @@ jobs:
           # リリース時に混ざらないよう、成果物を1つのフォルダに集めます
           mkdir final_assets
           # .imgファイルを移動（もし拡張子が違う場合は適宜修正してください）
-          mv *.img final_assets/ || true
+          mv *.img* final_assets/ || true
           # リネームしたu-bootなども移動
           mv u-boot-rockchip.bin final_assets/u-boot-rockchip-${{ matrix.model }}.bin || true
           if [ -f sd-card.txt ]; then mv sd-card.txt final_assets/sd-card-${{ matrix.model }}.txt; fi
