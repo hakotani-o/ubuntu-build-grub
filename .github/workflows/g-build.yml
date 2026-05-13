@@ -20,13 +20,12 @@ jobs:
           name: shared-rootfs-tarball
           path: ubuntu-rootfs.tar # 実際のパスを指定
           retention-days: 1
-
-
-  build:
+          
+build:
     name: Build for ${{ matrix.model }}
     runs-on: ubuntu-24.04-arm
     strategy:
-      fail-fast: false
+         fail-fast: false
       matrix:
         include:
           - model: orangepi-5
