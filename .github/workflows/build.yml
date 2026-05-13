@@ -8,7 +8,7 @@ jobs:
     name: Build for ${{ matrix.model }}
     runs-on: ubuntu-24.04-arm
     strategy:
-      fail-fast: false # 片方が失敗しても、もう片方のビルドを続行する
+      fail-fast: false
       matrix:
         include:
           - model: orangepi-5
@@ -33,52 +33,52 @@ jobs:
       - name: disk image
         run: |
           chmod +x disk_image.sh
-          # 引数を matrix から取得
           sudo ./disk_image.sh arm64 ${{ matrix.model }} ${{ matrix.dtb }}
-          echo "============================"
-          ls -l
-          echo "============================="
-
-      - name: Get current date
-        id: date
-        run: echo "now=$(date +'%Y-%m-%d %H:%M')" >> $GITHUB_OUTPUT
-
-      - name: Get kernel version
-        id: kernel
-        run: |
-          if [ -f kernel_version ]; then
-            cat kernel_version >> $GITHUB_OUTPUT
-          else
-            echo "kernel_version=unknown" >> $GITHUB_OUTPUT
-          fi
 
       - name: Rename files to avoid conflict
         run: |
-          # モデル名をつけてリネーム（例: u-boot-rockchip.bin -> u-boot-rockchip-orangepi-5.bin）
-          mv u-boot-rockchip.bin u-boot-rockchip-${{ matrix.model }}.bin
-          # 他に重複しそうなファイルがあれば同様にリネーム
-          if [ -f sd-card.txt ]; then mv sd-card.txt sd-card-${{ matrix.model }}.txt; fi
+          # リリース時に混ざらないよう、成果物を1つのフォルダに集めます
+          mkdir final_assets
+          # .imgファイルを移動（もし拡張子が違う場合は適宜修正してください）
+          mv *.img final_assets/ || true
+          # リネームしたu-bootなども移動
+          mv u-boot-rockchip.bin final_assets/u-boot-rockchip-${{ matrix.model }}.bin || true
+          if [ -f sd-card.txt ]; then mv sd-card.txt final_assets/sd-card-${{ matrix.model }}.txt; fi
 
+      # ここで一時保存（これが終わるとこのジョブのデータは消えるので artifact に預ける）
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts-${{ matrix.model }}
+          path: final_assets/
+          retention-days: 1
 
-      # リリース作成（5とPLUSの両方が完了するのを待たず、各自がアップロード）
-      - name: Create Release and Upload
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 全てのbuildジョブ（2つ分）からファイルをダウンロードして release-assets フォルダに入れる
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+          pattern: build-artifacts-*
+          merge-multiple: true
+
+      - name: Check downloaded files
+        run: ls -R release-assets/
+
+      # ここで1回だけリリースを作成
+      - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: build-${{ github.run_number }}
-      - name: Create Release and Upload
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: build-${{ github.run_number }}
-          name: "Orange Pi 5/PLUS Build ${{ github.run_number }}"
-          # allow_updatesではなく、こちらを使用（警告対策）
-          make_latest: "true"
-          # ファイルが既に存在する場合に上書きを許可
-          overwrite: true
-          # 2つのジョブが同時に動く際の衝突を防ぐ設定
-          fail_on_unmatched_files: false
-          files: |
-            ./Ubuntu-*img.xz
-            ./sd-card-${{ matrix.model }}.txt
-            ./u-boot-rockchip-${{ matrix.model }}.bin
+          name: Release Build ${{ github.run_number }}
+          files: release-assets/**/*
+          draft: false
+          prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
