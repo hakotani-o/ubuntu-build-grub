@@ -29,6 +29,7 @@ jobs:
           path: . # 作成されたファイルのパスを指定
 
  build:
+    needs: build_rootfs # rootfsが終わるまで待つ
     name: Build for ${{ matrix.model }}
     runs-on: ubuntu-24.04-arm
     strategy:
@@ -54,7 +55,8 @@ jobs:
         with:
           name: ubuntu.rootfs.tar
           path: ./
-
+          
+　     
       - name: disk image
         run: |
           chmod +x disk_image.sh
