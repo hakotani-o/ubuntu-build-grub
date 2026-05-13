@@ -3,6 +3,8 @@ name: ubuntu-image-grub-orangepi-combined
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write  # これがリリース作成に必要
 jobs:
   build:
     name: Build for ${{ matrix.model }}
