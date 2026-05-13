@@ -55,8 +55,7 @@ jobs:
         with:
           name: ubuntu.rootfs.tar
           path: ./
-          
-　     
+              
       - name: disk image
         run: |
           chmod +x disk_image.sh
