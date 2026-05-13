@@ -4,6 +4,9 @@ name: ubuntu-image-grub-orangepi-5-plus
 on: workflow_dispatch
 #workflow_dispatch
 #[push]
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   command:
     name: Use Linux commands
