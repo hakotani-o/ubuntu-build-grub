@@ -58,11 +58,28 @@ jobs:
   release:
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # リリース作成とタグ打ちに必須
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # 全履歴を取得してタグを打てるようにする
 
-      # 全てのbuildジョブ（2つ分）からファイルをダウンロードして release-assets フォルダに入れる
+      - name: Create and Push Tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          # 既存のタグをローカル・リモート両方で削除（念のための掃除）
+          git tag -d build-${{ github.run_number }} || true
+          git push origin :refs/tags/build-${{ github.run_number }} || true
+          
+          # 新しくタグを打って強制プッシュ
+          git tag build-${{ github.run_number }}
+          git push origin build-${{ github.run_number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
@@ -70,10 +87,6 @@ jobs:
           pattern: build-artifacts-*
           merge-multiple: true
 
-      - name: Check downloaded files
-        run: ls -R release-assets/
-
-      # ここで1回だけリリースを作成
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
@@ -82,5 +95,8 @@ jobs:
           files: release-assets/**/*
           draft: false
           prerelease: false
+          # 重要：既存のリリースがあっても上書き・更新を許可する
+          allow_updates: true
+          make_latest: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
