@@ -3,6 +3,9 @@ name: ubuntu-image-grub-orangepi-combined
 on:
   workflow_dispatch:
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 permissions:
   contents: write  # これがリリース作成に必要
 jobs:
