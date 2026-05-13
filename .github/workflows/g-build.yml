@@ -6,7 +6,7 @@ on:
 permissions:
   contents: write  # これがリリース作成に必要
 jobs:
-build_rootfs:
+ build_rootfs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -28,7 +28,7 @@ build_rootfs:
           name: shared-rootfs
           path: ubuntu.rootfs.tar # 作成されたファイルのパスを指定
 
-build:
+ build:
     name: Build for ${{ matrix.model }}
     runs-on: ubuntu-24.04-arm
     strategy:
@@ -78,7 +78,7 @@ build:
           path: final_assets/
           retention-days: 1
             
-release:
+ release:
     needs: build
     runs-on: ubuntu-latest
     permissions:
