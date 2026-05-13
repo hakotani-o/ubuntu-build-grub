@@ -77,8 +77,8 @@ build:
           name: build-artifacts-${{ matrix.model }}
           path: final_assets/
           retention-days: 1
-
-  release:
+            
+release:
     needs: build
     runs-on: ubuntu-latest
     permissions:
