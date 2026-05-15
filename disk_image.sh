@@ -160,6 +160,14 @@ UUID=${root_uuid} /      	ext4 defaults,noatime,x-systemd.growfs 0 1
 UUID=${boot_uuid} /boot 	vfat defaults 0 2
 EOF
 
+# Write bootloader to disk image
+if [ -f "u-boot-rockchip.bin" ]; then
+    dd if="u-boot-rockchip.bin" of="${loop}" seek=1 bs=32k conv=fsync
+else
+	echo "u-boot-rockchip.bin not found"
+	exit 1
+fi
+
 mount --bind /dev  "${mount_point}/root/dev"
 mount --bind /proc "${mount_point}/root/proc"
 mount --bind /sys  "${mount_point}/root/sys"
@@ -219,17 +227,6 @@ sed -i "s/DTB_FILENAME_PLACEHOLDER/${DTB_FILENAME}/" ${mount_point}/root/etc/ker
 chmod +x ${mount_point}/root/etc/kernel/postinst.d/zzzz-arm64-grub-dtb-fix
 echo GRUB_CMDLINE_LINUX='"'"$(cat ${mount_point}/root/etc/kernel/cmdline)"'"' >> ${mount_point}/root/etc/default/grub
 sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="quiet splash"/GRUB_CMDLINE_LINUX_DEFAULT="text"/' ${mount_point}/root/etc/default/grub
-
-mount --bind /dev  "${mount_point}/root/dev"
-mount --bind /proc "${mount_point}/root/proc"
-mount --bind /sys  "${mount_point}/root/sys"
-
-#chroot ${mount_point}/root /bin/bash -c "/etc/kernel/postinst.d/zzzz-arm64-grub-dtb-fix ${kernel_version}"
-
-
-umount "${mount_point}/root/sys"
-umount "${mount_point}/root/proc"
-umount "${mount_point}/root/dev"
 
 mkdir -p ${mount_point}/root/boot/rockchip/$kernel_version
 cp ${mount_point}/root${dtbs_install_path}${fdt_name} ${mount_point}/root/boot/rockchip/$kernel_version
