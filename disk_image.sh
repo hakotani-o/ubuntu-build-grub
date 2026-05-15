@@ -168,10 +168,15 @@ else
 	exit 1
 fi
 
-mount --bind /dev  "${mount_point}/root/dev"
-mount --bind /proc "${mount_point}/root/proc"
-mount --bind /sys  "${mount_point}/root/sys"
+#mount --bind /dev  "${mount_point}/root/dev"
+#mount --bind /proc "${mount_point}/root/proc"
+#mount --bind /sys  "${mount_point}/root/sys"
 
+mount dev-live -t devtmpfs "$mount_point/root/dev"
+mount devpts-live -t devpts -o nodev,nosuid "$mount_point/root/dev/pts"
+mount proc-live -t proc "$mount_point/root/proc"
+mount sysfs-live -t sysfs "$mount_point/root/sys"
+mount securityfs -t securityfs "$mount_point/root/sys/kernel/security"
 # --- GRUBインストール実行 ---
 chroot ${mount_point}/root /bin/bash -c "
     set -e
@@ -185,9 +190,15 @@ chroot ${mount_point}/root /bin/bash -c "
 "
 
 # --- 後片付け ---
-umount "${mount_point}/root/sys"
-umount "${mount_point}/root/proc"
-umount "${mount_point}/root/dev"
+umount "$mount_point/root/sys/kernel/security"
+umount "$mount_point/root/sys"
+umount "$mount_point/root/proc"
+umount "$mount_point/root/dev/pts"
+umount "$mount_point/root/dev"
+
+#umount "${mount_point}/root/sys"
+#umount "${mount_point}/root/proc"
+#umount "${mount_point}/root/dev"
 
 DTB_FILENAME="$3.dtb"
 
